@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getSession } from '@/lib/auth';
+import { getServerSession } from '@/lib/server-auth';
 import { prisma } from '@/lib/db';
 
 export const runtime = 'nodejs';
@@ -11,8 +10,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const session = await getSession(cookieStore);
+    const session = await getServerSession();
     const { id } = await params;
 
     if (!session) {
@@ -59,8 +57,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const session = await getSession(cookieStore);
+    const session = await getServerSession();
     const { id } = await params;
 
     if (!session) {

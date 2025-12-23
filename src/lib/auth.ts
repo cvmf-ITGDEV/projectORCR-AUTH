@@ -1,6 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
-import { cookies } from 'next/headers';
 import { User, Role } from '@/types';
 
 const JWT_SECRET = new TextEncoder().encode(
@@ -48,38 +47,6 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
   } catch {
     return null;
   }
-}
-
-export async function getSession(cookieStore?: Awaited<ReturnType<typeof cookies>>): Promise<JWTPayload | null> {
-  try {
-    if (typeof window !== 'undefined') return null;
-
-    const store = cookieStore || await cookies();
-    const token = store.get('auth-token')?.value;
-
-    if (!token) return null;
-
-    return verifyToken(token);
-  } catch (err) {
-    console.warn('[getSession] Could not access cookies:', (err as Error).message);
-    return null;
-  }
-}
-
-export async function setAuthCookie(token: string): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.set('auth-token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 8,
-    path: '/',
-  });
-}
-
-export async function clearAuthCookie(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete('auth-token');
 }
 
 export function canApproveApplications(role: Role): boolean {

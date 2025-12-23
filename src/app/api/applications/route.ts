@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getSession } from '@/lib/auth';
+import { getServerSession } from '@/lib/server-auth';
 import { prisma } from '@/lib/db';
 
 export const runtime = 'nodejs';
@@ -14,8 +13,7 @@ function generateApplicationNumber(): string {
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const session = await getSession(cookieStore);
+    const session = await getServerSession();
 
     if (!session) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -88,8 +86,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const session = await getSession(cookieStore);
+    const session = await getServerSession();
 
     if (!session) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -157,8 +154,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const session = await getSession(cookieStore);
+    const session = await getServerSession();
 
     if (!session) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyPassword, createToken, setAuthCookie } from '@/lib/auth';
+import { verifyPassword, createToken } from '@/lib/auth';
+import { setServerAuthCookie } from '@/lib/server-auth';
 import { prisma } from '@/lib/db';
 import { Role } from '@/types';
 
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
       isActive: user.isActive,
     });
 
-    await setAuthCookie(token);
+    await setServerAuthCookie(token);
 
     return NextResponse.json({
       user: {
