@@ -2,13 +2,17 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { getSession } from '@/lib/auth';
 
-export default async function Home() {
-  const cookieStore = cookies();
-  const session = await getSession(cookieStore);
-
-  if (session) {
-    redirect('/dashboard');
-  } else {
-    redirect('/login');
+export async function getSession(): Promise<JWTPayload | null> {
+  try {
+    // In Next.js 14+, cookies() might need to be awaited in some contexts
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token')?.value;
+    
+    if (!token) return null;
+    
+    return verifyToken(token);
+  } catch (err) {
+    console.warn('[getSession] Could not access cookies:', (err as Error).message);
+    return null;
   }
 }
