@@ -80,7 +80,7 @@ export async function setAuthCookie(token: string): Promise<void> {
 }
 
 export async function clearAuthCookie(): Promise<void> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies(); // Remove 'await' here
   cookieStore.delete('auth-token');
 }
 
