@@ -3,6 +3,8 @@ import { verifyPassword, createToken, setAuthCookie } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { Role } from '@/types';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
