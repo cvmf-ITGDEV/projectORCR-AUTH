@@ -69,7 +69,7 @@ export async function getSession(): Promise<JWTPayload | null> {
 }
 
 export async function setAuthCookie(token: string): Promise<void> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies(); // Remove 'await' here
   cookieStore.set('auth-token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
