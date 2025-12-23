@@ -22,10 +22,6 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-  const value = await hashPassword(password);
-  console.log('Password', value);
-  console.log('Hashed Password', hashedPassword);
-
   return bcrypt.compare(password, hashedPassword);
 }
 
@@ -54,26 +50,24 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
   }
 }
 
-export async function getSession(): Promise<JWTPayload | null> {
+export async function getSession(cookieStore?: ReturnType<typeof cookies>): Promise<JWTPayload | null> {
   try {
-    // ⚠️ In Bolt AI builder / client, `cookies()` throws
-    if (typeof window !== 'undefined') return null; // skip in client-side / builder
+    if (typeof window !== 'undefined') return null;
 
-    const cookieStore = cookies(); // server-only
-    const token = cookieStore.get('auth-token')?.value;
+    const store = cookieStore || cookies();
+    const token = store.get('auth-token')?.value;
 
     if (!token) return null;
 
     return verifyToken(token);
   } catch (err) {
-    // If called outside request scope, just return null
     console.warn('[getSession] Could not access cookies:', (err as Error).message);
     return null;
   }
 }
 
 export async function setAuthCookie(token: string): Promise<void> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies(); // Remove 'await' here
   cookieStore.set('auth-token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -84,7 +78,7 @@ export async function setAuthCookie(token: string): Promise<void> {
 }
 
 export async function clearAuthCookie(): Promise<void> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies(); // Remove 'await' here
   cookieStore.delete('auth-token');
 }
 

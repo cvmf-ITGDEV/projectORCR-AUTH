@@ -1,35 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyPassword, createToken, setAuthCookie } from '@/lib/auth';
-import prisma from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { Role } from '@/types';
+
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
-
+    console.log('=== LOGIN ATTEMPT START ===');
+    
+    const body = await request.json();
+    console.log('Body received:', { email: body.email, hasPassword: !!body.password });
+    
+    const { email, password } = body;
+    
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
+    console.log('Querying database...');
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
+    console.log('User found:', !!user);
 
     if (!user) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
-    if (!user.isActive) {
-      return NextResponse.json(
-        { error: 'Your account has been deactivated. Please contact an administrator.' },
-        { status: 403 }
-      );
-    }
-
+    console.log('Verifying password...');
     const isValidPassword = await verifyPassword(password, user.password);
-    if (!isValidPassword) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });  
-    }
+    console.log('Password valid:', isValidPassword);
+
 
     const token = await createToken({
       id: user.id,
@@ -53,7 +55,10 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Login error:', error);
-    return NextResponse.json({ error: 'An error occurred during login' }, { status: 500 });
-  }
+  console.error("LOGIN API ERROR:", error);
+  return Response.json(
+    { error: "Internal server error" },
+    { status: 500 }
+  );
+}
 }

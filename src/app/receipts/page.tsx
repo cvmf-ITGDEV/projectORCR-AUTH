@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -60,7 +60,7 @@ export default function ReceiptsPage() {
   const [search, setSearch] = useState('');
   const [type, setType] = useState('ALL');
 
-  const fetchReceipts = async () => {
+  const fetchReceipts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -84,11 +84,11 @@ export default function ReceiptsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, rowsPerPage, type, search]);
 
   useEffect(() => {
     fetchReceipts();
-  }, [page, rowsPerPage, type]);
+  }, [fetchReceipts]);
 
   const handleSearch = () => {
     setPage(0);

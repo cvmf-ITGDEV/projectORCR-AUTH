@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshUser]);
 
   const login = async (email: string, password: string) => {
+      console.log('LOGGING IN!')
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -47,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
+      console.log('DATA:', response)
       const data = await response.json();
 
       if (response.ok) {

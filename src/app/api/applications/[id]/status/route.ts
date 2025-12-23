@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { getSession, canApproveApplications } from '@/lib/auth';
-import prisma from '@/lib/db';
+import { prisma } from '@/lib/db';
 
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function PUT(
@@ -9,7 +11,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
+    const cookieStore = cookies();
+    const session = await getSession(cookieStore);
     const { id } = await params;
 
     if (!session) {
