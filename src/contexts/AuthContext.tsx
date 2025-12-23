@@ -48,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
+      console.log(response.json())
       const data = await response.json();
 
       if (response.ok) {
