@@ -50,19 +50,17 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
   }
 }
 
-export async function getSession(): Promise<JWTPayload | null> {
+export async function getSession(cookieStore?: ReturnType<typeof cookies>): Promise<JWTPayload | null> {
   try {
-    // ⚠️ In Bolt AI builder / client, `cookies()` throws
-    if (typeof window !== 'undefined') return null; // skip in client-side / builder
+    if (typeof window !== 'undefined') return null;
 
-    const cookieStore = cookies(); // server-only
-    const token = cookieStore.get('auth-token')?.value;
+    const store = cookieStore || cookies();
+    const token = store.get('auth-token')?.value;
 
     if (!token) return null;
 
     return verifyToken(token);
   } catch (err) {
-    // If called outside request scope, just return null
     console.warn('[getSession] Could not access cookies:', (err as Error).message);
     return null;
   }
