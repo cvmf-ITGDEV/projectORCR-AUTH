@@ -5,7 +5,7 @@ import { getSession } from '@/lib/auth';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const session = await getSession(cookieStore);
 
   if (session) {
