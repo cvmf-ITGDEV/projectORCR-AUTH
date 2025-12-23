@@ -1,0 +1,205 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlserver"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String   @default("PROCESSOR")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  loanApplications LoanApplication[] @relation("ProcessedBy")
+  approvedBy       LoanApplication[] @relation("ApprovedBy")
+  receipts         Receipt[]
+
+  @@map("users")
+}
+
+model Region {
+  id        String     @id
+  name      String
+  provinces Province[]
+
+  @@map("regions")
+}
+
+model Province {
+  id       String @id
+  name     String
+  regionId String
+  region   Region @relation(fields: [regionId], references: [id])
+  cities   City[]
+
+  @@map("provinces")
+}
+
+model City {
+  id         String     @id
+  name       String
+  provinceId String
+  province   Province   @relation(fields: [provinceId], references: [id])
+  barangays  Barangay[]
+
+  @@map("cities")
+}
+
+model Barangay {
+  id               String            @id
+  name             String
+  cityId           String
+  city             City              @relation(fields: [cityId], references: [id])
+  loanApplications LoanApplication[]
+
+  @@map("barangays")
+}
+
+model LoanApplication {
+  id                String @id @default(uuid())
+  applicationNumber String @unique
+  status            String @default("DRAFT")
+
+  firstName   String
+  middleName  String?
+  lastName    String
+  suffix      String?
+  dateOfBirth DateTime
+  gender      String
+  civilStatus String
+  nationality String   @default("Filipino")
+
+  email           String?
+  mobileNumber    String
+  telephoneNumber String?
+
+  streetAddress String
+  barangayId    String
+  barangay      Barangay @relation(fields: [barangayId], references: [id])
+  zipCode       String?
+
+  permanentStreetAddress String?
+  permanentBarangayId    String?
+  permanentZipCode       String?
+  sameAsPresent          Boolean @default(true)
+
+  employmentStatus String
+  employerName     String?
+  employerAddress  String?
+  position         String?
+  yearsEmployed    Int?
+  monthlyIncome    Decimal  @db.Decimal(18, 2)
+  otherIncome      Decimal? @db.Decimal(18, 2)
+  incomeSource     String?
+
+  loanPurpose    String
+  loanAmount     Decimal  @db.Decimal(18, 2)
+  loanTerm       Int
+  interestRate   Decimal  @db.Decimal(5, 2)
+  monthlyPayment Decimal? @db.Decimal(18, 2)
+
+  coMakerName         String?
+  coMakerAddress      String?
+  coMakerContact      String?
+  coMakerRelationship String?
+
+  validIdType   String?
+  validIdNumber String?
+  validIdExpiry DateTime?
+
+  remarks         String? @db.NVarChar(Max)
+  rejectionReason String? @db.NVarChar(Max)
+
+  processedById String?
+  processedBy   User?   @relation("ProcessedBy", fields: [processedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  approvedById  String?
+  approvedBy    User?   @relation("ApprovedBy", fields: [approvedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  submittedAt DateTime?
+  approvedAt  DateTime?
+  rejectedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  documents Document[]
+  receipts  Receipt[]
+
+  @@index([applicationNumber])
+  @@index([status])
+  @@index([createdAt])
+  @@map("loan_applications")
+}
+
+model Document {
+  id                String          @id @default(uuid())
+  fileName          String
+  fileType          String
+  fileSize          Int
+  filePath          String
+  documentType      String
+  loanApplicationId String
+  loanApplication   LoanApplication @relation(fields: [loanApplicationId], references: [id], onDelete: Cascade)
+  uploadedAt        DateTime        @default(now())
+
+  @@map("documents")
+}
+
+model Receipt {
+  id             String  @id @default(uuid())
+  receiptNumber  String  @unique
+  receiptType    String
+  amount         Decimal @db.Decimal(18, 2)
+  paymentMethod  String
+  paymentDetails String?
+  purpose        String
+  payerName      String
+  payerAddress   String?
+  remarks        String? @db.NVarChar(Max)
+
+  loanApplicationId String?
+  loanApplication   LoanApplication? @relation(fields: [loanApplicationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  issuedById String
+  issuedBy   User     @relation(fields: [issuedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  issuedAt   DateTime @default(now())
+
+  voidedAt     DateTime?
+  voidedReason String?
+
+  @@index([receiptNumber])
+  @@index([issuedAt])
+  @@map("receipts")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityType String
+  entityId   String
+  action     String
+  changes    String?  @db.NVarChar(Max)
+  userId     String?
+  userEmail  String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.NVarChar(Max)
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
