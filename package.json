@@ -17,7 +17,7 @@
     "@prisma/adapter-mssql": "^7.2.0",
     "@prisma/adapter-neon": "^7.2.0",
     "@prisma/adapter-pg": "^7.2.0",
-    "@prisma/client": "^7.2.0",
+    "@prisma/client": "5.22.0",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.1.0",
     "jose": "^6.1.3",
@@ -40,7 +40,7 @@
     "dotenv": "^17.2.3",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.15",
-    "prisma": "^7.2.0",
+    "prisma": "5.22.0",
     "typescript": "^5"
   }
 }
