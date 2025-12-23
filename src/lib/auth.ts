@@ -22,10 +22,6 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-  const value = await hashPassword(password);
-  console.log('Password', value);
-  console.log('Hashed Password', hashedPassword);
-
   return bcrypt.compare(password, hashedPassword);
 }
 
