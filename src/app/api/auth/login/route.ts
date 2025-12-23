@@ -4,6 +4,7 @@ import prisma from '@/lib/db';
 import { Role } from '@/types';
 
 export async function POST(request: NextRequest) {
+  console.log('LOGGING IN!')
   try {
     const { email, password } = await request.json();
 
