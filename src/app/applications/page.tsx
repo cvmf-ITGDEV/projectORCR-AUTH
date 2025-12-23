@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -63,7 +63,7 @@ export default function ApplicationsPage() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('ALL');
 
-  const fetchApplications = async () => {
+  const fetchApplications = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -87,11 +87,11 @@ export default function ApplicationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, rowsPerPage, status, search]);
 
   useEffect(() => {
     fetchApplications();
-  }, [page, rowsPerPage, status]);
+  }, [fetchApplications]);
 
   const handleSearch = () => {
     setPage(0);
