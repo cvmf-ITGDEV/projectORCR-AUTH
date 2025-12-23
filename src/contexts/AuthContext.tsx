@@ -48,8 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
+      console.log('DATA:', response)
       const data = await response.json();
-      console.log('DATA:',data)
 
       if (response.ok) {
         setUser(data.user);
