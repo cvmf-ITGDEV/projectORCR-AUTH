@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  console.log('asdasds')
+  console.log( process.env.DATABASE_URL)
   try {
     const session = await getServerSession();
     
