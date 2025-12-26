@@ -28,7 +28,7 @@ export async function GET() {
         isActive: true,
       },
     });
-
+ console.log('user',user)
     if (!user) {
       // User doesn't exist - clear invalid auth cookie
       await clearServerAuthCookie();
@@ -37,7 +37,7 @@ export async function GET() {
         { status: 401 }
       );
     }
-  console.log('user',user)
+ 
     if (!user.isActive) {
       // User is deactivated - clear auth cookie
       await clearServerAuthCookie();
