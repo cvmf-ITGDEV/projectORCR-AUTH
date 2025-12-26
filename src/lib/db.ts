@@ -31,7 +31,7 @@ function validateDatabaseUrl(): string {
 
 function createPrismaClient(): PrismaClient {
   const databaseUrl = validateDatabaseUrl();
- console.log('databaseUrl',databaseUrl)
+
   const pool = new Pool({ connectionString: databaseUrl });
   const adapter = new PrismaNeon(pool as never);
 
@@ -40,7 +40,8 @@ function createPrismaClient(): PrismaClient {
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   });
 }
-
+ console.log('a',createPrismaClient())
+console.log('b',globalForPrisma.prisma)
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {
