@@ -1,9 +1,4 @@
-// Default Schema - PostgreSQL/Supabase (Development)
-// This file uses the development schema by default
-// To switch between dev and prod, use npm scripts:
-//   - npm run schema:dev  (PostgreSQL/Supabase)
-//   - npm run schema:prod (Azure SQL Server)
-
+// Development Schema - PostgreSQL/Supabase
 generator client {
   provider = "prisma-client-js"
 }

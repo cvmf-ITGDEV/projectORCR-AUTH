@@ -1,16 +1,19 @@
 import { config } from 'dotenv';
+import { resolve } from 'path';
 import { PrismaClient } from '@prisma/client';
-import { PrismaMssql } from '@prisma/adapter-mssql';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { Pool } from '@neondatabase/serverless';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcryptjs';
 
-config();
+config({ path: resolve(__dirname, '../.env') });
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-const adapter = new PrismaMssql(process.env.DATABASE_URL);
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaNeon(pool as never);
 const prisma = new PrismaClient({
   adapter: adapter as never,
   log: ['error', 'warn'],
