@@ -187,10 +187,36 @@ async function seedUsers() {
   const users = [];
   const usedEmails = new Set<string>();
 
+  const demoAccounts = [
+    { email: 'admin@lending.ph', firstName: 'Admin', lastName: 'User', role: 'ADMIN' },
+    { email: 'processor@lending.ph', firstName: 'Processor', lastName: 'User', role: 'PROCESSOR' },
+    { email: 'approver@lending.ph', firstName: 'Approver', lastName: 'User', role: 'APPROVER' },
+  ];
+
+  for (const account of demoAccounts) {
+    const createdAt = baseDate;
+    const updatedAt = addDays(createdAt, 1);
+
+    const user = await prisma.user.create({
+      data: {
+        email: account.email,
+        password: hashedPassword,
+        firstName: account.firstName,
+        lastName: account.lastName,
+        role: account.role,
+        isActive: true,
+        createdAt,
+        updatedAt,
+      },
+    });
+    users.push(user);
+    usedEmails.add(account.email);
+  }
+
   const roles = [
-    { role: 'ADMIN', count: 3 },
-    { role: 'PROCESSOR', count: 6 },
-    { role: 'APPROVER', count: 3 },
+    { role: 'ADMIN', count: 2 },
+    { role: 'PROCESSOR', count: 5 },
+    { role: 'APPROVER', count: 2 },
   ];
 
   let userCounter = 1;
@@ -228,7 +254,7 @@ async function seedUsers() {
     }
   }
 
-  console.log(`✅ Created ${users.length} users`);
+  console.log(`✅ Created ${users.length} users (including 3 demo accounts)`);
   return users;
 }
 
