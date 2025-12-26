@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { Pool } from '@neondatabase/serverless';
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
@@ -29,8 +29,9 @@ function validateDatabaseUrl(): string {
 
 function createPrismaClient(): PrismaClient {
   const databaseUrl = validateDatabaseUrl();
+
   const pool = new Pool({ connectionString: databaseUrl });
-  const adapter = new PrismaPg(pool);
+  const adapter = new PrismaNeon(pool as never);
 
   return new PrismaClient({
     adapter,
