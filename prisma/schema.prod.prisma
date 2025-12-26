@@ -1,15 +1,10 @@
-// Default Schema - PostgreSQL/Supabase (Development)
-// This file uses the development schema by default
-// To switch between dev and prod, use npm scripts:
-//   - npm run schema:dev  (PostgreSQL/Supabase)
-//   - npm run schema:prod (Azure SQL Server)
-
+// Production Schema - Azure SQL Server
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlserver"
 }
 
 model User {
@@ -120,8 +115,8 @@ model LoanApplication {
   validIdNumber String?
   validIdExpiry DateTime?
 
-  remarks         String? @db.Text
-  rejectionReason String? @db.Text
+  remarks         String? @db.NVarChar(Max)
+  rejectionReason String? @db.NVarChar(Max)
 
   processedById String?
   processedBy   User?   @relation("ProcessedBy", fields: [processedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -167,7 +162,7 @@ model Receipt {
   purpose        String
   payerName      String
   payerAddress   String?
-  remarks        String? @db.Text
+  remarks        String? @db.NVarChar(Max)
 
   loanApplicationId String?
   loanApplication   LoanApplication? @relation(fields: [loanApplicationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -189,7 +184,7 @@ model AuditLog {
   entityType String
   entityId   String
   action     String
-  changes    String?  @db.Text
+  changes    String?  @db.NVarChar(Max)
   userId     String?
   userEmail  String?
   ipAddress  String?
@@ -203,7 +198,7 @@ model AuditLog {
 model SystemSetting {
   id        String   @id @default(uuid())
   key       String   @unique
-  value     String   @db.Text
+  value     String   @db.NVarChar(Max)
   updatedAt DateTime @updatedAt
 
   @@map("system_settings")

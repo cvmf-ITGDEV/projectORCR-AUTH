@@ -8,7 +8,13 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "schema:dev": "node -e \"require('fs').copyFileSync('prisma/schema.dev.prisma', 'prisma/schema.prisma')\" && prisma generate",
+    "schema:prod": "node -e \"require('fs').copyFileSync('prisma/schema.prod.prisma', 'prisma/schema.prisma')\" && prisma generate",
+    "db:push:dev": "npm run schema:dev && prisma db push",
+    "db:push:prod": "npm run schema:prod && prisma db push",
+    "db:migrate:dev": "npm run schema:dev && prisma migrate dev",
+    "db:migrate:prod": "npm run schema:prod && prisma migrate deploy"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
