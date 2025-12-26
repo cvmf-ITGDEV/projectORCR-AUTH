@@ -8,7 +8,7 @@ const globalForPrisma = globalThis as unknown as {
 
 function validateDatabaseUrl(): string {
   const databaseUrl = process.env.DATABASE_URL;
-
+console.log('db',databaseUrl)
   if (!databaseUrl) {
     throw new Error(
       'DATABASE_URL environment variable is not set.\n' +
