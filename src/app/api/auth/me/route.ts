@@ -9,7 +9,7 @@ export async function GET() {
  
   try {
     const session = await getServerSession();
-   
+   console.log('sdasd')
     if (!session) {
       return NextResponse.json(
         { error: 'Not authenticated' },
