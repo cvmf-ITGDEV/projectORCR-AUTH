@@ -1,60 +1,79 @@
-# Quick Start: Dual Schema Setup
+# Quick Start: Supabase Setup
 
-## 1. Get Your Supabase Password
+## Setup Status
 
-1. Visit: https://supabase.com/dashboard
-2. Select project: **0ec90b57d6e95fcbda19832f**
-3. Go to: **Settings → Database**
-4. Copy your database password
+Your Supabase database is already configured and ready to use!
 
-## 2. Update .env File
+- Database schema has been applied via Supabase migrations
+- Demo user accounts are created
+- Philippine geographic data (regions, provinces, cities, barangays) is loaded
+- System settings are configured
 
-Replace `[YOUR-PASSWORD]` in the `DATABASE_URL` with your actual Supabase password:
+## Demo Accounts
 
-```env
-DATABASE_URL="postgresql://postgres.0ec90b57d6e95fcbda19832f:YOUR_ACTUAL_PASSWORD@aws-0-us-west-1.pooler.supabase.com:6543/postgres"
-```
+The following test accounts are available:
 
-## 3. Switch to Development Schema
+- **Admin**: admin@lending.ph / Password123!
+- **Processor**: processor@lending.ph / Password123!
+- **Approver**: approver@lending.ph / Password123!
+
+## Development Workflow
+
+### 1. Generate Prisma Client
 
 ```bash
 npm run schema:dev
 ```
 
-## 4. Push Schema to Supabase
-
-```bash
-npm run db:push:dev
-```
-
-## 5. Seed the Database (Optional)
-
-```bash
-npm run db:seed
-```
-
-## 6. Start Development
+### 2. Start Development Server
 
 ```bash
 npm run dev
 ```
 
----
+The application will be available at http://localhost:3000
 
-## Switch to Production (Azure SQL Server)
-
-When you need to test against Azure SQL Server:
+### 3. Build for Production
 
 ```bash
-npm run schema:prod
-npm run db:push:prod
+npm run build
 ```
 
-To switch back to development:
+---
 
+## Database Management
+
+### Viewing Data
+
+You can view and manage your database through the Supabase dashboard:
+https://supabase.com/dashboard
+
+### Adding Test Data
+
+The database currently has:
+- 3 demo user accounts
+- Philippine geographic data (regions, provinces, cities, barangays)
+- System settings
+
+To add loan applications and receipts for testing, use the application's UI after logging in.
+
+---
+
+## Switching Between Databases
+
+This project supports dual schemas for development and production:
+
+**Development (Supabase/PostgreSQL)**
 ```bash
 npm run schema:dev
 ```
+
+**Production (Azure SQL Server)**
+```bash
+npm run schema:prod
+```
+
+Note: The production database requires separate configuration in your .env file.
 
 ---
 
@@ -62,32 +81,33 @@ npm run schema:dev
 
 | Command | Description |
 |---------|-------------|
-| `npm run schema:dev` | Switch to PostgreSQL/Supabase |
-| `npm run schema:prod` | Switch to Azure SQL Server |
-| `npm run db:push:dev` | Push schema to Supabase |
-| `npm run db:push:prod` | Push schema to Azure SQL |
-| `npm run db:seed` | Seed database with sample data |
+| `npm run schema:dev` | Generate Prisma client for Supabase |
+| `npm run schema:prod` | Generate Prisma client for Azure SQL |
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run lint` | Run ESLint |
 
 ---
 
 ## Troubleshooting
 
-**Connection Error?**
-- Check your Supabase password in `.env`
-- Verify your Supabase project is active
-- Make sure you replaced `[YOUR-PASSWORD]` with the actual password
-
-**Schema Issues?**
+**Build Errors?**
 ```bash
-npx prisma generate
+npm run schema:dev
+npm run build
 ```
 
-**Wrong Database?**
-Check which schema is active:
+**Type Errors?**
+Make sure Prisma client is generated:
 ```bash
-head -n 5 prisma/schema.prisma
+npm run schema:dev
 ```
+
+**Database Connection Issues?**
+- Verify DATABASE_URL in .env is correct
+- Check Supabase project status in dashboard
+- Ensure network connectivity to Supabase
 
 ---
 
-For detailed documentation, see **DUAL_SCHEMA_SETUP.md**
+For detailed architecture documentation, see **DUAL_SCHEMA_SETUP.md** and **README.md**

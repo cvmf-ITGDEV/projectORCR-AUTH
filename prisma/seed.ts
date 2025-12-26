@@ -1,12 +1,12 @@
 import { config } from 'dotenv';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { Pool } from '@neondatabase/serverless';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcryptjs';
 
-config({ path: resolve(__dirname, '../.env') });
+config({ path: join(process.cwd(), '.env') });
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
