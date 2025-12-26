@@ -6,10 +6,10 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  console.log( process.env.DATABASE_URL)
+ 
   try {
     const session = await getServerSession();
-    
+     console.log('session',session)
     if (!session) {
       return NextResponse.json(
         { error: 'Not authenticated' },
