@@ -9,7 +9,7 @@ export async function GET() {
  
   try {
     const session = await getServerSession();
-     console.log('session',session)
+   
     if (!session) {
       return NextResponse.json(
         { error: 'Not authenticated' },
@@ -37,7 +37,7 @@ export async function GET() {
         { status: 401 }
       );
     }
-
+  console.log('user',user)
     if (!user.isActive) {
       // User is deactivated - clear auth cookie
       await clearServerAuthCookie();
