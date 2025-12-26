@@ -1,4 +1,3 @@
-// Production Schema - Azure SQL Server
 generator client {
   provider = "prisma-client-js"
 }

@@ -1,41 +1,40 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaMssql } from '@prisma/adapter-mssql';
-import { PrismaNeon } from '@prisma/adapter-neon';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { WebSocket } from 'ws';
-
-neonConfig.webSocketConstructor = WebSocket;
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
-function createPrismaClient() {
+function validateDatabaseUrl(): string {
   const databaseUrl = process.env.DATABASE_URL;
 
   if (!databaseUrl) {
-    console.error('Environment variables available:', Object.keys(process.env).filter(k => k.includes('DATABASE')));
-    throw new Error('DATABASE_URL environment variable is not set. Please check your .env file.');
+    throw new Error(
+      'DATABASE_URL environment variable is not set.\n' +
+      'Please add a valid PostgreSQL connection string to your .env file.\n' +
+      'Example: DATABASE_URL="postgresql://user:password@host:5432/database"'
+    );
   }
 
-  console.log('Database URL type:', databaseUrl.split('://')[0]);
-
-  let adapter;
-
-  if (databaseUrl.startsWith('postgresql://') || databaseUrl.startsWith('postgres://')) {
-    console.log('Creating Neon Pool with connection string');
-    const pool = new Pool({ connectionString: databaseUrl });
-    adapter = new PrismaNeon(pool as never);
-  } else if (databaseUrl.startsWith('sqlserver://')) {
-    console.log('Creating MSSQL adapter with connection string');
-    adapter = new PrismaMssql(databaseUrl);
-  } else {
-    throw new Error('Unsupported database type. Use PostgreSQL or SQL Server connection string.');
+  if (!databaseUrl.startsWith('postgresql://') && !databaseUrl.startsWith('postgres://')) {
+    throw new Error(
+      'DATABASE_URL must be a valid PostgreSQL connection string.\n' +
+      'Expected format: postgresql://user:password@host:5432/database'
+    );
   }
+
+  return databaseUrl;
+}
+
+function createPrismaClient(): PrismaClient {
+  const databaseUrl = validateDatabaseUrl();
+  const pool = new Pool({ connectionString: databaseUrl });
+  const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
-    adapter: adapter as never,
-    log: ['error', 'warn'],
+    adapter,
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   });
 }
 
@@ -43,4 +42,14 @@ export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
+}
+
+export async function checkDatabaseConnection(): Promise<boolean> {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return true;
+  } catch (error) {
+    console.error('Database connection check failed:', error);
+    return false;
+  }
 }

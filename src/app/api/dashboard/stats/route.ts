@@ -85,6 +85,23 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Dashboard stats error:', error);
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    if (errorMessage.includes('DATABASE_URL')) {
+      return NextResponse.json(
+        { error: 'Database configuration error. Please check DATABASE_URL.' },
+        { status: 503 }
+      );
+    }
+
+    if (errorMessage.includes('connect') || errorMessage.includes('Connection')) {
+      return NextResponse.json(
+        { error: 'Database connection failed. Please verify your database is accessible.' },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to fetch dashboard stats' },
       { status: 500 }
