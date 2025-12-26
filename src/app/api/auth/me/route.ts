@@ -6,6 +6,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  console.log('asdasds')
   try {
     const session = await getServerSession();
     
