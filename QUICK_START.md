@@ -9,6 +9,24 @@ Your Supabase database is already configured and ready to use!
 - Philippine geographic data (regions, provinces, cities, barangays) is loaded
 - System settings are configured
 
+## Initial Configuration
+
+### 1. Set Up Environment Variables
+
+If you haven't already, copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your Supabase credentials:
+- `DATABASE_URL` - Your Supabase PostgreSQL connection string
+- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous key
+- `JWT_SECRET` - A secure random string for JWT signing
+
+See `.env.example` for detailed instructions on getting these values.
+
 ## Demo Accounts
 
 The following test accounts are available:
@@ -17,15 +35,17 @@ The following test accounts are available:
 - **Processor**: processor@lending.ph / Password123!
 - **Approver**: approver@lending.ph / Password123!
 
-## Development Workflow
-
-### 1. Generate Prisma Client
+### 2. Generate Prisma Client
 
 ```bash
 npm run schema:dev
 ```
 
-### 2. Start Development Server
+This generates the Prisma client for Supabase/PostgreSQL and validates your configuration.
+
+## Development Workflow
+
+### 1. Start Development Server
 
 ```bash
 npm run dev
@@ -33,7 +53,13 @@ npm run dev
 
 The application will be available at http://localhost:3000
 
-### 3. Build for Production
+On startup, the application will:
+- Validate all required environment variables
+- Check database connectivity
+- Initialize system settings if needed
+- Display configuration status in the console
+
+### 2. Build for Production
 
 ```bash
 npm run build
@@ -107,6 +133,39 @@ npm run schema:dev
 - Verify DATABASE_URL in .env is correct
 - Check Supabase project status in dashboard
 - Ensure network connectivity to Supabase
+
+---
+
+## Configuration Management
+
+### Environment Variables
+
+The application uses centralized configuration management via `src/lib/config.ts`. All environment variables are validated on startup with helpful error messages if anything is missing.
+
+**Required variables:**
+- `DATABASE_URL` - Supabase connection string
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+- `JWT_SECRET` - Secret for JWT token signing (32+ characters recommended)
+
+**Optional variables:**
+- `WEB_CONTAINER` - Set to "true" for WebContainer environments
+- `NODE_ENV` - Automatically set by Next.js
+
+### System Settings
+
+System settings are stored in the database and managed via `src/lib/settings.ts`. These can be updated at runtime and are cached for performance.
+
+**Default settings include:**
+- Default interest rate: 8.5%
+- Loan amounts: 5,000 - 1,000,000
+- Application fee: 500
+- Processing fee: 2.5%
+- Max loan term: 36 months
+- Contact information
+- Business hours
+
+The system automatically initializes these settings if they don't exist in the database.
 
 ---
 
