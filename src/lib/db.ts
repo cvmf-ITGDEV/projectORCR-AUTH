@@ -24,14 +24,14 @@ function validateDatabaseUrl(): string {
     );
   }
 
-  console.log('databaseUrl',databaseUrl)
+ 
 
   return databaseUrl;
 }
 
 function createPrismaClient(): PrismaClient {
   const databaseUrl = validateDatabaseUrl();
-
+ console.log('databaseUrl',databaseUrl)
   const pool = new Pool({ connectionString: databaseUrl });
   const adapter = new PrismaNeon(pool as never);
 
