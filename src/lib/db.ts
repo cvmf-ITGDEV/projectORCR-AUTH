@@ -1,58 +1,93 @@
+// import { PrismaClient } from '@prisma/client';
+// import { PrismaNeon } from '@prisma/adapter-neon';
+// import { Pool, neonConfig } from '@neondatabase/serverless';
+
+// const globalForPrisma = globalThis as unknown as {
+//   prisma?: PrismaClient;
+// };
+
+// function validateDatabaseUrl(): string {
+//   const databaseUrl = process.env.DATABASE_URL;
+
+//   if (!databaseUrl) {
+//     throw new Error(
+//       'DATABASE_URL environment variable is not set.\n' +
+//       'Please add a valid PostgreSQL connection string to your .env file.\n' +
+//       'Example: DATABASE_URL="postgresql://user:password@host:5432/database"'
+//     );
+//   }
+
+//   if (!databaseUrl.startsWith('postgresql://') && !databaseUrl.startsWith('postgres://')) {
+//     throw new Error(
+//       'DATABASE_URL must be a valid PostgreSQL connection string.\n' +
+//       'Expected format: postgresql://user:password@host:5432/database'
+//     );
+//   }
+
+//   return databaseUrl;
+// }
+
+// function createPrismaClient(): PrismaClient {
+//   const databaseUrl = validateDatabaseUrl();
+
+//   const pool = new Pool({ connectionString: databaseUrl });
+//   const adapter = new PrismaNeon(pool as never);
+
+//   return new PrismaClient({
+//     adapter,
+//     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+//   });
+// }
+
+// export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+
+// if (process.env.NODE_ENV !== 'production') {
+//   globalForPrisma.prisma = prisma;
+// }
+
+// export async function checkDatabaseConnection(): Promise<boolean> {
+//   try {
+//     await prisma.$queryRaw`SELECT 1`;
+//     return true;
+//   } catch (error) {
+//     console.error('Database connection check failed:', error);
+//     return false;
+//   }
+// }
+
+
 import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
-import { Pool, neonConfig } from '@neondatabase/serverless';
+import { Pool } from '@neondatabase/serverless';
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
-function validateDatabaseUrl(): string {
+function getPrismaClient(): PrismaClient {
+  if (globalForPrisma.prisma) {
+    return globalForPrisma.prisma;
+  }
+
   const databaseUrl = process.env.DATABASE_URL;
 
   if (!databaseUrl) {
-    throw new Error(
-      'DATABASE_URL environment variable is not set.\n' +
-      'Please add a valid PostgreSQL connection string to your .env file.\n' +
-      'Example: DATABASE_URL="postgresql://user:password@host:5432/database"'
-    );
+    throw new Error('DATABASE_URL missing in Bolt Environment Variables');
   }
 
-  if (!databaseUrl.startsWith('postgresql://') && !databaseUrl.startsWith('postgres://')) {
-    throw new Error(
-      'DATABASE_URL must be a valid PostgreSQL connection string.\n' +
-      'Expected format: postgresql://user:password@host:5432/database'
-    );
-  }
+  const pool = new Pool({
+    connectionString: databaseUrl,
+  });
 
-  return databaseUrl;
-}
-
-function createPrismaClient(): PrismaClient {
-  const databaseUrl = validateDatabaseUrl();
-
-  const pool = new Pool({ connectionString: databaseUrl });
   const adapter = new PrismaNeon(pool as never);
 
-  return new PrismaClient({
+  const prisma = new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: ['error'],
   });
-}
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
-
-if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
+  return prisma;
 }
 
-export async function checkDatabaseConnection(): Promise<boolean> {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    return true;
-  } catch (error) {
-    console.error('Database connection check failed:', error);
-    return false;
-  }
-}
-
-
+export const prisma = getPrismaClient();
