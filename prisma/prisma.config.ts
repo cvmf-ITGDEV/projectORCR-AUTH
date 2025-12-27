@@ -15,7 +15,7 @@ import { Pool } from '@neondatabase/serverless';
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is missing in Bolt');
 }
-
+console.log( path.join(__dirname, 'schema.prisma'))
 export default defineConfig({
   schema: path.join(__dirname, 'schema.prisma'),
   datasource: {
