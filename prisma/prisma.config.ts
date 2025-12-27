@@ -15,8 +15,5 @@ if (!process.env.DATABASE_URL) {
 }
 
 export default defineConfig({
-  schema: path.join(__dirname, 'schema.prisma'),
-  datasource: {
-    url: process.env.DATABASE_URL,
-  },
+  schema: 'prisma/schema.prisma',
 });
