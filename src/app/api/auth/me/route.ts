@@ -17,7 +17,7 @@ export async function GET() {
       );
     }
    console.log('session',session)
-    const user = await prisma.user.findFirst({
+    const user = await prisma.users.findFirst({
       where: { email: session.email },
       select: {
         id: true,
