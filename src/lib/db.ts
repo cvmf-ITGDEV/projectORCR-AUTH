@@ -60,36 +60,21 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { Pool } from '@neondatabase/serverless';
 
-const globalForPrisma = globalThis as unknown as {
-  prisma?: PrismaClient;
-};
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-function getPrismaClient(): PrismaClient {
-  if (globalForPrisma.prisma) {
-    return globalForPrisma.prisma;
+function getPrisma() {
+  if (globalForPrisma.prisma) return globalForPrisma.prisma;
+
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL missing in Bolt environment variables');
   }
 
-  const databaseUrl = process.env.DATABASE_URL;
-
-  console.log(databaseUrl)
-
-  if (!databaseUrl) {
-    throw new Error('DATABASE_URL missing in Bolt Environment Variables');
-  }
-
-  const pool = new Pool({
-    connectionString: databaseUrl,
-  });
-
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const adapter = new PrismaNeon(pool as never);
 
-  const prisma = new PrismaClient({
-    adapter,
-    log: ['error'],
-  });
-
+  const prisma = new PrismaClient({ adapter, log: ['error'] });
   globalForPrisma.prisma = prisma;
   return prisma;
 }
 
-export const prisma = getPrismaClient();
+export const prisma = getPrisma();
