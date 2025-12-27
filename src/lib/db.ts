@@ -71,6 +71,8 @@ function getPrismaClient(): PrismaClient {
 
   const databaseUrl = process.env.DATABASE_URL;
 
+  console.log(databaseUrl)
+
   if (!databaseUrl) {
     throw new Error('DATABASE_URL missing in Bolt Environment Variables');
   }
