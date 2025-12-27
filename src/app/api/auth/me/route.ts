@@ -16,7 +16,7 @@ export async function GET() {
         { status: 401 }
       );
     }
-
+   console.log('session',session)
     const user = await prisma.user.findFirst({
       where: { email: session.email },
       select: {
