@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getSession } from '@/lib/auth';
+import { getServerSession } from '@/lib/server-auth';
 import { prisma } from '@/lib/db';
 
 export const runtime = 'nodejs';
@@ -8,8 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const cookieStore = cookies();
-    const session = await getSession(cookieStore);
+    const session = await getServerSession();
 
     if (!session) {
       return NextResponse.json(
@@ -87,6 +85,23 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Dashboard stats error:', error);
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    if (errorMessage.includes('DATABASE_URL')) {
+      return NextResponse.json(
+        { error: 'Database configuration error. Please check DATABASE_URL.' },
+        { status: 503 }
+      );
+    }
+
+    if (errorMessage.includes('connect') || errorMessage.includes('Connection')) {
+      return NextResponse.json(
+        { error: 'Database connection failed. Please verify your database is accessible.' },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to fetch dashboard stats' },
       { status: 500 }

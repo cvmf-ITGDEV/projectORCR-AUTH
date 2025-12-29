@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getSession, clearAuthCookie } from '@/lib/auth';
+import { getServerSession, clearServerAuthCookie } from '@/lib/server-auth';
 import { prisma } from '@/lib/db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+ 
   try {
-    const cookieStore = cookies();
-    const session = await getSession(cookieStore);
-    
+    const session = await getServerSession();
+   console.log('sdasd')
     if (!session) {
       return NextResponse.json(
         { error: 'Not authenticated' },
@@ -18,8 +17,8 @@ export async function GET() {
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.userId },
+    const user = await prisma.user.findFirst({
+      where: { email: session.email },
       select: {
         id: true,
         email: true,
@@ -29,19 +28,19 @@ export async function GET() {
         isActive: true,
       },
     });
-
+ console.log('user',user)
     if (!user) {
       // User doesn't exist - clear invalid auth cookie
-      await clearAuthCookie();
+      await clearServerAuthCookie();
       return NextResponse.json(
         { error: 'User not found' },
         { status: 401 }
       );
     }
-
+ 
     if (!user.isActive) {
       // User is deactivated - clear auth cookie
-      await clearAuthCookie();
+      await clearServerAuthCookie();
       return NextResponse.json(
         { error: 'User account is inactive' },
         { status: 403 }

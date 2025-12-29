@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { clearAuthCookie } from '@/lib/auth';
+import { clearServerAuthCookie } from '@/lib/server-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST() {
   try {
-    await clearAuthCookie();
+    await clearServerAuthCookie();
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Logout error:', error);
