@@ -1,16 +1,8 @@
-import path from 'node:path'
-import { defineConfig } from 'prisma/config'
+import { PrismaClient } from '@prisma/client';
+import { PrismaNeon } from '@prisma/adapter-neon';
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is missing')
-}
-
-console.log(process.env.DATABASE_URL)
-
-export default defineConfig({
-  schema: path.join(__dirname, 'schema.prisma'),
-  datasource: {
-    url: process.env.DATABASE_URL,
-    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL,
-  },
-})
+export const prisma = new PrismaClient({
+  adapter: new PrismaNeon({
+    url: process.env.DATABASE_URL, // your Bolt AI/Postgres connection string
+  }),
+});
