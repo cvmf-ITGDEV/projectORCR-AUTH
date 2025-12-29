@@ -191,14 +191,17 @@ export default function LoginPage() {
           </form>
 
           <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="caption" color="text.secondary" display="block" textAlign="center">
-              For demo purposes, use:
+            <Typography variant="caption" color="text.secondary" display="block" textAlign="center" sx={{ mb: 1 }}>
+              Demo Accounts (Password: Password123!)
             </Typography>
             <Typography variant="caption" color="text.secondary" display="block" textAlign="center">
-              Admin: admin@example.com / Admin123!
+              Admin: admin@lending.ph
             </Typography>
             <Typography variant="caption" color="text.secondary" display="block" textAlign="center">
-              Processor: processor@example.com / Processor123!
+              Processor: processor@lending.ph
+            </Typography>
+            <Typography variant="caption" color="text.secondary" display="block" textAlign="center">
+              Approver: approver@lending.ph
             </Typography>
           </Box>
         </CardContent>
